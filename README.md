@@ -1,4 +1,4 @@
-
+![FreePBX.png](assets/freepbx-breaker-logo.svg)
 ## General Overview
 This repository contains the Proof of Concept (PoC) and the detailed methodology
 required to exploit the CVE-2025-57819 vulnerability in FreePBX installations,

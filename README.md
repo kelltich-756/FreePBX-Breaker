@@ -30,6 +30,15 @@ This repository provides a Python script (`freepbx-breaker.py`) to automate the 
 - **Requests Library:** Must be installed (`pip install requests`).
 - **Target Details:** You need the specific IP address and port of the FreePBX service you are attacking on the Connected machine.
 
+## Installation
+
+```bash
+git clone https://github.com/kelltich-756/FreePBX-Breaker.git
+cd FreePBX-Breaker
+pip install requests
+chmod +x flar3ad
+```
+
 ### Execution Steps
 
 **Step 1: Target Identification**

@@ -10,13 +10,14 @@ parser = argparse.ArgumentParser(prog='freepbx-breaker',
                     epilog='UwU')
 parser.add_argument('IP')
 parser.add_argument('PORT')
+parser.add_argument('-t', '--token', help='Bearer token if present')
 args = parser.parse_args()
 
-TARGET_URL = "http://[args.IP]:[args.PORT]/api/endpoint_vulnerable"
+TARGET_URL = f"http://{args.IP}:{args.PORT}/api/endpoint_vulnerable"
 TARGET_HEADERS = {
     "Content-Type": "application/json",
    
-    "Authorization": "Bearer [TOKEN_IF_PRESENT]" 
+    "Authorization": f"Bearer {args.token}" 
 }
 
 

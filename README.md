@@ -36,7 +36,7 @@ This repository provides a Python script (`freepbx-breaker.py`) to automate the 
 git clone https://github.com/kelltich-756/FreePBX-Breaker.git
 cd FreePBX-Breaker
 pip install requests
-chmod +x flar3ad
+chmod +x freepbx-breaker.py
 ```
 
 ### Execution Steps

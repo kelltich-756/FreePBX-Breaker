@@ -58,7 +58,7 @@ You must adjust the variables within the `freepbx-breaker.py` file:
 **Step 3: Execution**
 Run the script from your terminal:
 ```bash
-python3 exploit.py
+python3 freepbx-breaker.py
 ```
 ## Authors
 

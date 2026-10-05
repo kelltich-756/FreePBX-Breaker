@@ -23,7 +23,7 @@ The vulnerability resides in the [Specify Module/Component, e.g., Dialplan Manag
 - **Goal:** The attacker uses this chain to execute commands like `whoami`, `cat /etc/shadow`, or download backdoors.
 
 ## How to Use the Exploit? (Step-by-Step Guide)
-This repository provides a Python script (`exploit.py`) to automate the attack process.
+This repository provides a Python script (`freepbx-breaker.py`) to automate the attack process.
 
 ### Prerequisites
 - **Python 3:** Must be installed on your attacking machine.
@@ -39,7 +39,7 @@ For the HackTheBox Connected machine, confirm the point of entry for the vulnera
 *   **Vulnerable Endpoint:** `[URL_OF_VULNERABLE_ENDPOINT]`
 
 **Step 2: Payload Configuration**
-You must adjust the variables within the `exploit.py` file:
+You must adjust the variables within the `freepbx-breaker.py` file:
 
 *   **`TARGET_URL`:** Set the complete URL of the attack point.
 *   **`MALICIOUS_PAYLOAD`:** This is the key component.
